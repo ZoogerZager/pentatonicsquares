@@ -37,20 +37,26 @@ class pentatonicsquares:
         orange.grid(row=1, column=1)
 
     def green_press(self, event):
-        self.player.note_on(52, 127, 1)
+        self.player.note_on(self.calc_note(event.y) + 40, self.calc_volume(event.x), 1)
         print('Green!', event.x, event.y)
 
     def red_press(self, event):
-        self.player.note_on(54, 127, 1)
+        self.player.note_on(self.calc_note(event.y) + 42, self.calc_volume(event.x), 1)
         print('Red!', event.x, event.y)
 
     def blue_press(self, event):
-        self.player.note_on(59, 127, 1)
+        self.player.note_on(self.calc_note(event.y) + 47, self.calc_volume(event.x), 1)
         print('Blue!', event.x, event.y)
 
     def orange_press(self, event):
-        self.player.note_on(61, 127, 1)
+        self.player.note_on(self.calc_note(event.y) + 49, self.calc_volume(event.x), 1)
         print('Orange!', event.x, event.y)
+
+    def calc_volume(self, x_pos):
+        return round(127 * (x_pos / 400))
+
+    def calc_note(self, y_pos):
+        return 12 * round(4 * (y_pos) / 400)
 
     def _safe_close(self):
         self.player.close()
