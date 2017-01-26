@@ -23,27 +23,27 @@ class pentatonicsquares:
         self.master.title('Pentatonic Squares')
         self.master.resizable(False, False)
 
-        self.frame_input = ttk.Frame(self.master)
-        self.frame_input.pack(side=TOP)
+        self.frame_main = ttk.Frame(self.master)
+        self.frame_main.pack(side=TOP)
 
-        self.notes = [40, 42, 47, 49]
+        self.notes = [100, 102, 107, 109]
 
-        green = Frame(self.frame_input, width=400, height=400, background='#56B949')
+        green = Frame(self.frame_main, width=400, height=400, background='#56B949')
         green.bind('<Button-1>', self.green_press)
         green.bind('<Button-2>', self.green_press)
         green.bind('<Button-3>', self.green_press)
         green.grid(row=0, column=0)
-        red = Frame(self.frame_input, width=400, height=400, background='#EE4035')
+        red = Frame(self.frame_main, width=400, height=400, background='#EE4035')
         red.bind('<Button-1>', self.red_press)
         red.bind('<Button-2>', self.red_press)
         red.bind('<Button-3>', self.red_press)
         red.grid(row=0, column=1)
-        blue = Frame(self.frame_input, width=400, height=400, background='#30499B')
+        blue = Frame(self.frame_main, width=400, height=400, background='#30499B')
         blue.bind('<Button-1>', self.blue_press)
         blue.bind('<Button-2>', self.blue_press)
         blue.bind('<Button-3>', self.blue_press)
         blue.grid(row=1, column=0)
-        orange = Frame(self.frame_input, width=400, height=400, background='#F0A32F')
+        orange = Frame(self.frame_main, width=400, height=400, background='#F0A32F')
         orange.bind('<Button-1>', self.orange_press)
         orange.bind('<Button-2>', self.orange_press)
         orange.bind('<Button-3>', self.orange_press)
@@ -51,19 +51,22 @@ class pentatonicsquares:
 
 
     def green_press(self, event):
-        self.player.note_on(self.calc_note(event.y) + self.notes[0], self.calc_velocity(event.x), event.num)
+        self.player.note_on(self.notes[0] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
 
     def red_press(self, event):
-        self.player.note_on(self.calc_note(event.y) + self.notes[1], self.calc_velocity(event.x), event.num)
+        self.player.note_on(self.notes[1] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
 
     def blue_press(self, event):
-        self.player.note_on(self.calc_note(event.y) + self.notes[2], self.calc_velocity(event.x), event.num)
+        self.player.note_on(self.notes[2] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
 
     def orange_press(self, event):
-        self.player.note_on(self.calc_note(event.y) + self.notes[3], self.calc_velocity(event.x), event.num)
+        self.player.note_on(self.notes[3] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
+
+    def calc_velocity_right(self, x_pos):
+        return 127 - round(127 * (x_pos / 400))
 
     def calc_note(self, y_pos):
         return 12 * round(4 * (y_pos) / 400)
