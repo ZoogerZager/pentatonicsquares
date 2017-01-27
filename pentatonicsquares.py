@@ -23,6 +23,20 @@ class pentatonicsquares:
         self.master.title('Pentatonic Squares')
         self.master.resizable(False, False)
 
+        # Menu Configuration
+        self.menubar = Menu(self.master)
+        self.master.config(menu = self.menubar)
+        self.file = Menu(self.menubar)
+        self.scales = Menu(self.menubar)
+        self.help = Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.file, label='File')
+        self.menubar.add_cascade(menu=self.scales, label='Scales')
+        self.menubar.add_cascade(menu=self.help, label='Help')
+        self.file.add_command(label='Quit', command=self._safe_close)
+        self.scales.add_command(label='Go Major', command=self.go_major)
+        self.scales.add_command(label='Go Minor', command=self.go_minor)
+        self.help.add_command(label='LOL, no', command=lambda: None)
+
         self.frame_main = ttk.Frame(self.master)
         self.frame_main.pack(side=TOP)
 
@@ -49,7 +63,6 @@ class pentatonicsquares:
         orange.bind('<Button-3>', self.orange_press)
         orange.grid(row=1, column=1)
 
-
     def green_press(self, event):
         self.player.note_on(self.notes[0] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
 
@@ -62,6 +75,9 @@ class pentatonicsquares:
     def orange_press(self, event):
         self.player.note_on(self.notes[3] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
 
+    def four_press(self, event):
+        print('heyo')
+
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
 
@@ -70,6 +86,12 @@ class pentatonicsquares:
 
     def calc_note(self, y_pos):
         return 12 * round(4 * (y_pos) / 400)
+
+    def go_major(self):
+        self.notes = [100, 104, 107, 109]
+
+    def go_minor(self):
+        self.notes = [100, 103, 107, 110]
 
     def _safe_close(self):
         self.player.close()
