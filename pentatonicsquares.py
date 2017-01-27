@@ -9,8 +9,7 @@ class pentatonicsquares:
     player.set_instrument(10, 1) # Glockenspiel
     player.set_instrument(11, 2) # Music Box
     player.set_instrument(12, 3) # Vibraphone
-    player.set_instrument(13, 4) # Marimba
-    midi_codes = [52, 54, 56, 59, 61, 64]
+    notes = [100, 102, 107, 109]
 
     def __init__(self, master):
 
@@ -25,23 +24,62 @@ class pentatonicsquares:
 
         # Menu Configuration
         self.menubar = Menu(self.master)
-        self.master.config(menu = self.menubar)
+        self.master.config(menu=self.menubar)
+
+        # File
         self.file = Menu(self.menubar)
-        self.scales = Menu(self.menubar)
-        self.help = Menu(self.menubar)
         self.menubar.add_cascade(menu=self.file, label='File')
-        self.menubar.add_cascade(menu=self.scales, label='Scales')
-        self.menubar.add_cascade(menu=self.help, label='Help')
+        self.file.add_command(label='Reset', command=self.reset)
         self.file.add_command(label='Quit', command=self._safe_close)
-        self.scales.add_command(label='Go Major', command=self.go_major)
-        self.scales.add_command(label='Go Minor', command=self.go_minor)
+
+        # Instruments
+        self.instrument_list = ['Acoustic Grand Piano', 'Bright Acoustic Piano',
+        'Electric Grand Piano', 'Honky-tonk Piano', 'Electric Piano 1',
+        'Electric Piano 2', 'Harpsichord', 'Clavi', 'Celesta', 'Glockenspiel',
+        'Music Box', 'Vibraphone', 'Marimba', 'Xylophone', 'Tubular Bells',
+        'Dulcimer', 'Drawbar Organ', 'Percussive Organ', 'Rock Organ',
+        'Church Organ', 'Reed Organ', 'Accordion', 'Harmonica', 'Tango Accordion',
+        'Acoustic Guitar (nylon)', 'Acoustic Guitar (steel)', 'Electric Guitar (jazz)',
+        'Electric Guitar (clean)', 'Electric Guitar (muted)', 'Overdriven Guitar',
+        'Distortion Guitar', 'Guitar Harmonics']
+
+        self.instruments = Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.instruments, label='Instruments')
+
+        self.piano_menu = Menu(self.menubar)
+        self.instruments.add_cascade(menu=self.piano_menu, label='Piano')
+        for piano in self.instrument_list[0:8]:
+            self.piano_menu.add_command(label=piano, command=lambda i=piano: self.select_instrument(i))
+
+        self.chrom_percussion = Menu(self.menubar)
+        self.instruments.add_cascade(menu=self.chrom_percussion, label='Chromatic Percussion')
+        for chrom_per in self.instrument_list[8:16]:
+            self.chrom_percussion.add_command(label=chrom_per, command=lambda i=chrom_per: self.select_instrument(i))
+
+        self.organ_menu = Menu(self.menubar)
+        self.instruments.add_cascade(menu=self.organ_menu, label='Organ')
+        for organ in self.instrument_list[16:24]:
+            self.organ_menu.add_command(label=organ, command=lambda i=organ: self.select_instrument(i))
+
+        self.guitar_menu = Menu(self.menubar)
+        self.instruments.add_cascade(menu=self.guitar_menu, label='Guitar')
+        for guitar in self.instrument_list[24:32]:
+            self.guitar_menu.add_command(label=guitar, command=lambda i=guitar: self.select_instrument(i))
+
+        # Scales
+        self.scales = Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.scales, label='Scales')
+        self.scales.add_command(label='Major (R M3 P5 M6)', command=self.go_major)
+        self.scales.add_command(label='Minor (R m3 P5 m7)', command=self.go_minor)
+
+        # Help
+        self.help = Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.help, label='Help')
         self.help.add_command(label='LOL, no', command=lambda: None)
 
+        # GUI
         self.frame_main = ttk.Frame(self.master)
         self.frame_main.pack(side=TOP)
-
-        self.notes = [100, 102, 107, 109]
-
         green = Frame(self.frame_main, width=400, height=400, background='#56B949')
         green.bind('<Button-1>', self.green_press)
         green.bind('<Button-2>', self.green_press)
@@ -92,6 +130,17 @@ class pentatonicsquares:
 
     def go_minor(self):
         self.notes = [100, 103, 107, 110]
+
+    def select_instrument(self, instrument):
+        self.player.set_instrument(self.instrument_list.index(instrument) + 1, 1)
+
+    def reset(self):
+        self.player.close()
+        self.player = midi.Output(0)
+        self.player.set_instrument(10, 1)
+        self.player.set_instrument(11, 2)
+        self.player.set_instrument(12, 3)
+        self.midi_codes = [52, 54, 56, 59, 61, 64]
 
     def _safe_close(self):
         self.player.close()
