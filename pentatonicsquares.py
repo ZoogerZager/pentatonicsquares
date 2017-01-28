@@ -63,7 +63,6 @@ class pentatonicsquares:
         'Reverse Cymbal', 'Guitar Fret Noise', 'Breath Noise', 'Seashore', 'Bird Tweet',
         'Telephone Ring', 'Helicopter', 'Applause', 'Gunshot']
 
-        print(len(self.instrument_list))
         self.instruments = Menu(self.menubar)
         self.menubar.add_cascade(menu=self.instruments, label='Instruments')
 
@@ -222,7 +221,6 @@ class pentatonicsquares:
         self.player.set_instrument(10, 1)
         self.player.set_instrument(11, 2)
         self.player.set_instrument(12, 3)
-        self.midi_codes = [52, 54, 56, 59, 61, 64]
 
     def _safe_close(self):
         self.player.close()
