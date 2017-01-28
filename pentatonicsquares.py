@@ -10,6 +10,7 @@ class pentatonicsquares:
     player.set_instrument(11, 2) # Music Box
     player.set_instrument(12, 3) # Vibraphone
     notes = [100, 102, 107, 109]
+    default_click = 1 # Mouse Button 1
 
     def __init__(self, master):
 
@@ -31,6 +32,12 @@ class pentatonicsquares:
         self.menubar.add_cascade(menu=self.file, label='File')
         self.file.add_command(label='Reset', command=self.reset)
         self.file.add_command(label='Quit', command=self._safe_close)
+
+        self.buttons = Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.buttons, label='Buttons')
+        self.buttons.add_radiobutton(label='Left Click', command=lambda: self.set_click(1))
+        self.buttons.add_radiobutton(label='Right Click', command=lambda: self.set_click(3))
+        self.buttons.add_radiobutton(label='Middle Click', command=lambda: self.set_click(2))
 
         # Instruments
         self.instrument_list = ['Acoustic Grand Piano', 'Bright Acoustic Piano',
@@ -171,16 +178,16 @@ class pentatonicsquares:
 
         # Key Bindings
         for mouse_button in ['<Button-1>', '<Button-2>', '<Button-3>']:
-            green.bind(mouse_button, lambda event, i=0: self.play_note(event, color=i))
-            red.bind(mouse_button, lambda event, i=1: self.play_note(event, color=i))
-            blue.bind(mouse_button, lambda event, i=2: self.play_note(event, color=i))
-            orange.bind(mouse_button, lambda event, i=3: self.play_note(event, color=i))
+            green.bind(mouse_button, lambda event, i=0: self.play_note(event, note=i))
+            red.bind(mouse_button, lambda event, i=1: self.play_note(event, note=i))
+            blue.bind(mouse_button, lambda event, i=2: self.play_note(event, note=i))
+            orange.bind(mouse_button, lambda event, i=3: self.play_note(event, note=i))
 
-    def play_note(self, event, color):
-        if color in [0, 2]:
-            self.player.note_on(self.notes[color] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
-        if color in [1, 3]:
-            self.player.note_on(self.notes[color] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
+    def play_note(self, event, note):
+        if note in [0, 2]:
+            self.player.note_on(self.notes[note] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
+        if note in [1, 3]:
+            self.player.note_on(self.notes[note] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -198,7 +205,10 @@ class pentatonicsquares:
         self.notes = [100, 103, 107, 110]
 
     def select_instrument(self, instrument):
-        self.player.set_instrument(self.instrument_list.index(instrument), 1)
+        self.player.set_instrument(self.instrument_list.index(instrument), self.default_click)
+
+    def set_click(self, button):
+        self.default_click = button
 
     def reset(self):
         self.player.close()
