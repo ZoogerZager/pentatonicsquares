@@ -161,40 +161,26 @@ class pentatonicsquares:
         self.frame_main = ttk.Frame(self.master)
         self.frame_main.pack(side=TOP)
         green = Frame(self.frame_main, width=400, height=400, background='#56B949')
-        green.bind('<Button-1>', self.green_press)
-        green.bind('<Button-2>', self.green_press)
-        green.bind('<Button-3>', self.green_press)
         green.grid(row=0, column=0)
         red = Frame(self.frame_main, width=400, height=400, background='#EE4035')
-        red.bind('<Button-1>', self.red_press)
-        red.bind('<Button-2>', self.red_press)
-        red.bind('<Button-3>', self.red_press)
         red.grid(row=0, column=1)
         blue = Frame(self.frame_main, width=400, height=400, background='#30499B')
-        blue.bind('<Button-1>', self.blue_press)
-        blue.bind('<Button-2>', self.blue_press)
-        blue.bind('<Button-3>', self.blue_press)
         blue.grid(row=1, column=0)
         orange = Frame(self.frame_main, width=400, height=400, background='#F0A32F')
-        orange.bind('<Button-1>', self.orange_press)
-        orange.bind('<Button-2>', self.orange_press)
-        orange.bind('<Button-3>', self.orange_press)
         orange.grid(row=1, column=1)
 
-    def green_press(self, event):
-        self.player.note_on(self.notes[0] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
+        # Key Bindings
+        for mouse_button in ['<Button-1>', '<Button-2>', '<Button-3>']:
+            green.bind(mouse_button, lambda event, i=0: self.play_note(event, color=i))
+            red.bind(mouse_button, lambda event, i=1: self.play_note(event, color=i))
+            blue.bind(mouse_button, lambda event, i=2: self.play_note(event, color=i))
+            orange.bind(mouse_button, lambda event, i=3: self.play_note(event, color=i))
 
-    def red_press(self, event):
-        self.player.note_on(self.notes[1] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
-
-    def blue_press(self, event):
-        self.player.note_on(self.notes[2] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
-
-    def orange_press(self, event):
-        self.player.note_on(self.notes[3] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
-
-    def four_press(self, event):
-        print('heyo')
+    def play_note(self, event, color):
+        if color in [0, 2]:
+            self.player.note_on(self.notes[color] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
+        if color in [1, 3]:
+            self.player.note_on(self.notes[color] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -212,7 +198,6 @@ class pentatonicsquares:
         self.notes = [100, 103, 107, 110]
 
     def select_instrument(self, instrument):
-        print(instrument, print(self.instrument_list.index(instrument)))
         self.player.set_instrument(self.instrument_list.index(instrument), 1)
 
     def reset(self):
