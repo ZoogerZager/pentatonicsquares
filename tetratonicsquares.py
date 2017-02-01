@@ -11,6 +11,10 @@ class tetratonicsquares:
     player.set_instrument(11, 2) # Music Box
     player.set_instrument(12, 3) # Vibraphone
     notes = [100, 102, 107, 109]
+    major = [100, 104, 107, 109]
+    minor = [100, 103, 107, 110]
+    insen = [100, 101, 105, 110]
+
     default_click = 1 # Mouse Button 1
 
     def __init__(self, master):
@@ -66,13 +70,15 @@ class tetratonicsquares:
             menu = Menu(self.menubar)
             self.instruments.add_cascade(menu=menu, label=family)
             for instrument in instrument_list:
-                menu.add_command(label=instrument, command=lambda f=family, i=instrument: self.select_instrument(f, i))
+                menu.add_command(label=instrument,
+                command=lambda f=family, i=instrument: self.select_instrument(f, i))
 
         # Scales
         self.scales = Menu(self.menubar)
         self.menubar.add_cascade(menu=self.scales, label='Scales')
-        self.scales.add_command(label='Major (R M3 P5 M6)', command=self.go_major)
-        self.scales.add_command(label='Minor (R m3 P5 m7)', command=self.go_minor)
+        self.scales.add_command(label='Major (R M3 P5 M6)', command=lambda s=self.major: self.set_scale(s))
+        self.scales.add_command(label='Minor (R m3 P5 m7)', command=lambda s=self.minor: self.set_scale(s))
+        self.scales.add_command(label='Insen (R m2 P4 m7)', command=lambda s=self.insen: self.set_scale(s))
 
         # Help
         self.help = Menu(self.menubar)
@@ -115,11 +121,8 @@ class tetratonicsquares:
     def calc_note(self, y_pos):
         return 12 * round(4 * (y_pos) / 400)
 
-    def go_major(self):
-        self.notes = [100, 104, 107, 109]
-
-    def go_minor(self):
-        self.notes = [100, 103, 107, 110]
+    def set_scale(self, scale):
+        self.notes = scale
 
     def select_instrument(self, family, instrument):
         midi_code = ((list(self.instrument_dict.keys())).index(family) * 8
