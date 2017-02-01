@@ -3,7 +3,7 @@ from pygame import midi
 from tkinter import *
 from tkinter import ttk
 
-class pentatonicsquares:
+class tetratonicsquares:
 
     midi.init()
     player = midi.Output(0)
@@ -21,7 +21,7 @@ class pentatonicsquares:
 
     def _createGUI(self):
 
-        self.master.title('Pentatonic Squares')
+        self.master.title('Tetratonic Squares')
         self.master.resizable(False, False)
 
         # Menu Configuration
@@ -42,7 +42,7 @@ class pentatonicsquares:
 
         # Instruments
         self.instrument_dict = OrderedDict()
-        self.instrument_dict['Piano'] = ['Acoustic Grand Piano', 'Bright Acoustic Piano', 'Electric Grand Piano', 'Honky-tonk Piano', 'Electric Piano 1','Electric Piano 2', 'Harpsichord', 'Clavi',]
+        self.instrument_dict['Piano'] = ['Acoustic Grand Piano', 'Bright Acoustic Piano','Electric Grand Piano', 'Honky-tonk Piano', 'Electric Piano 1','Electric Piano 2', 'Harpsichord', 'Clavi',]
         self.instrument_dict['Chromatic Percussion'] = ['Celesta', 'Glockenspiel', 'Music Box', 'Vibraphone', 'Marimba', 'Xylophone', 'Tubular Bells', 'Dulcimer']
         self.instrument_dict['Organ'] = ['Drawbar Organ', 'Percussive Organ', 'Rock Organ', 'Church Organ', 'Reed Organ', 'Accordion', 'Harmonica', 'Tango Accordion']
         self.instrument_dict['Guitar'] = ['Acoustic Guitar (nylon)', 'Acoustic Guitar (steel)', 'Electric Guitar (jazz)', 'Electric Guitar (clean)', 'Electric Guitar (muted)', 'Overdriven Guitar', 'Distortion Guitar', 'Guitar Harmonics']
@@ -100,9 +100,11 @@ class pentatonicsquares:
 
     def play_note(self, event, note):
         if note in [0, 2]:
-            self.player.note_on(self.notes[note] - self.calc_note(event.y), self.calc_velocity(event.x), event.num)
+            self.player.note_on(self.notes[note] - self.calc_note(event.y),
+                                self.calc_velocity(event.x), event.num)
         if note in [1, 3]:
-            self.player.note_on(self.notes[note] - self.calc_note(event.y), self.calc_velocity_right(event.x), event.num)
+            self.player.note_on(self.notes[note] - self.calc_note(event.y),
+                                self.calc_velocity_right(event.x), event.num)
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -120,7 +122,9 @@ class pentatonicsquares:
         self.notes = [100, 103, 107, 110]
 
     def select_instrument(self, family, instrument):
-        self.player.set_instrument(((list(self.instrument_dict.keys())).index(family) * 8 + self.instrument_dict[family].index(instrument)), self.default_click)
+        midi_code = ((list(self.instrument_dict.keys())).index(family) * 8
+                    + self.instrument_dict[family].index(instrument))
+        self.player.set_instrument(midi_code, self.default_click)
 
     def set_click(self, button):
         self.default_click = button
@@ -139,7 +143,7 @@ class pentatonicsquares:
 def main():
 
     root = Tk()
-    app = pentatonicsquares(root)
+    app = tetratonicsquares(root)
     root.mainloop()
 
 if __name__ == '__main__': main()
