@@ -78,9 +78,11 @@ class tetratonicsquares:
         self.menubar.add_cascade(menu=self.scales, label='Scales')
         for name, scale in self.scale_dict.items():
             self.scales.add_command(label=name, command= lambda s=scale: self.set_scale(s))
+        self.scales.add_separator()
+        self.scales.add_command(label='Define Custom Scale', command=self.custom_scale)
 
         # Help
-        self.help = Menu(self.menubar)
+        self.help = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(menu=self.help, label='Help')
         self.help.add_command(label='LOL, no', command=lambda: None)
 
@@ -95,6 +97,10 @@ class tetratonicsquares:
         blue.grid(row=1, column=0)
         orange = Frame(self.frame_main, width=400, height=400, background='#F0A32F')
         orange.grid(row=1, column=1)
+
+        self.second = IntVar()
+        self.third = IntVar()
+        self.fourth = IntVar()
 
         # Key Bindings
         for mouse_button in ['<Button-1>', '<Button-2>', '<Button-3>']:
@@ -122,6 +128,19 @@ class tetratonicsquares:
 
     def set_scale(self, scale):
         self.notes = scale
+
+    def set_custom_scale(self):
+        self.notes = [100, 100 + self.second.get(), 100 + self.third.get(), 100 + self.fourth.get()]
+
+    def custom_scale(self):
+        popup = Toplevel(self.master, background='#83DE84', width=100, height=100, padx=10, pady=15)
+        popup.title('Define Custom Scale')
+        Spinbox(popup, values=('Root'), width=7).grid(row=0, column=0)
+        Spinbox(popup, from_=0, to=11, width=7, textvariable=self.second, command=self.set_custom_scale).grid(row=0, column=1)
+        Spinbox(popup, from_=0, to=11, width=7, textvariable=self.third, command=self.set_custom_scale).grid(row=0, column=2)
+        Spinbox(popup, from_=0, to=11, width=7, textvariable=self.fourth, command=self.set_custom_scale).grid(row=0, column=3)
+        Label(popup, text='Notes are measured in half steps above the Root', pady=10, background='#83DE84').grid(row=1, column=0, columnspan=4)
+
 
     def select_instrument(self, family, instrument):
         midi_code = ((list(self.instrument_dict.keys())).index(family) * 8
