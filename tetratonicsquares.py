@@ -110,12 +110,14 @@ class tetratonicsquares:
             orange.bind(mouse_button, lambda event, i=3: self.play_note(event, note=i))
 
     def play_note(self, event, note):
+        if note in [0, 1]:
+            note_code = self.notes[note] - self.calc_note(event.y)
+        if note in [2, 3]:
+            note_code = self.notes[note] - 48 + self.calc_note(event.y)
         if note in [0, 2]:
-            self.player.note_on(self.notes[note] - self.calc_note(event.y),
-                                self.calc_velocity(event.x), event.num)
+            self.player.note_on(note_code, self.calc_velocity(event.x), event.num)
         if note in [1, 3]:
-            self.player.note_on(self.notes[note] - self.calc_note(event.y),
-                                self.calc_velocity_right(event.x), event.num)
+            self.player.note_on(note_code, self.calc_velocity_right(event.x), event.num)
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -140,7 +142,6 @@ class tetratonicsquares:
         Spinbox(popup, from_=0, to=11, width=7, textvariable=self.third, command=self.set_custom_scale).grid(row=0, column=2)
         Spinbox(popup, from_=0, to=11, width=7, textvariable=self.fourth, command=self.set_custom_scale).grid(row=0, column=3)
         Label(popup, text='Notes are measured in half steps above the Root', pady=10, background='#83DE84').grid(row=1, column=0, columnspan=4)
-
 
     def select_instrument(self, family, instrument):
         midi_code = ((list(self.instrument_dict.keys())).index(family) * 8
