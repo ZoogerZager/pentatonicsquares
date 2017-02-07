@@ -33,7 +33,7 @@ class tetratonicsquares:
         self.master.config(menu=self.menubar)
 
         # File
-        self.file = Menu(self.menubar)
+        self.file = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(menu=self.file, label='File')
         self.file.add_command(label='Reset', command=self.reset)
         self.file.add_command(label='Quit', command=self._safe_close)
@@ -79,7 +79,17 @@ class tetratonicsquares:
         for name, scale in self.scale_dict.items():
             self.scales.add_command(label=name, command= lambda s=scale: self.set_scale(s))
         self.scales.add_separator()
+        self.second, self.third, self.fourth = (IntVar(), IntVar(), IntVar())
         self.scales.add_command(label='Define Custom Scale', command=self.custom_scale)
+
+        # Effects
+        self.effects = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(menu=self.effects, label='Effects')
+        self.repeat, self.repeat_delay = (BooleanVar(), IntVar())
+        self.repeat_delay.set(1000) # Default to 1000 milliseconds
+        self.effects.add_checkbutton(label='Repeat', variable=self.repeat)
+        self.effects.add_separator()
+        self.effects.add_command(label='Repeat Options', command=self.repeat_popup)
 
         # Help
         self.help = Menu(self.menubar, tearoff=0)
@@ -89,25 +99,21 @@ class tetratonicsquares:
         # GUI
         self.frame_main = ttk.Frame(self.master)
         self.frame_main.pack(side=TOP)
-        green = Frame(self.frame_main, width=400, height=400, background='#56B949')
-        green.grid(row=0, column=0)
-        red = Frame(self.frame_main, width=400, height=400, background='#EE4035')
-        red.grid(row=0, column=1)
-        blue = Frame(self.frame_main, width=400, height=400, background='#30499B')
-        blue.grid(row=1, column=0)
-        orange = Frame(self.frame_main, width=400, height=400, background='#F0A32F')
-        orange.grid(row=1, column=1)
-
-        self.second = IntVar()
-        self.third = IntVar()
-        self.fourth = IntVar()
+        self.green = Frame(self.frame_main, width=400, height=400, background='#56B949')
+        self.green.grid(row=0, column=0)
+        self.red = Frame(self.frame_main, width=400, height=400, background='#EE4035')
+        self.red.grid(row=0, column=1)
+        self.blue = Frame(self.frame_main, width=400, height=400, background='#30499B')
+        self.blue.grid(row=1, column=0)
+        self.orange = Frame(self.frame_main, width=400, height=400, background='#F0A32F')
+        self.orange.grid(row=1, column=1)
 
         # Key Bindings
         for mouse_button in ['<Button-1>', '<Button-2>', '<Button-3>']:
-            green.bind(mouse_button, lambda event, i=0: self.play_note(event, note=i))
-            red.bind(mouse_button, lambda event, i=1: self.play_note(event, note=i))
-            blue.bind(mouse_button, lambda event, i=2: self.play_note(event, note=i))
-            orange.bind(mouse_button, lambda event, i=3: self.play_note(event, note=i))
+            self.green.bind(mouse_button, lambda event, i=0: self.play_note(event, note=i))
+            self.red.bind(mouse_button, lambda event, i=1: self.play_note(event, note=i))
+            self.blue.bind(mouse_button, lambda event, i=2: self.play_note(event, note=i))
+            self.orange.bind(mouse_button, lambda event, i=3: self.play_note(event, note=i))
 
     def play_note(self, event, note):
         if note in [0, 1]:
@@ -118,6 +124,8 @@ class tetratonicsquares:
             self.player.note_on(note_code, self.calc_velocity(event.x), event.num)
         if note in [1, 3]:
             self.player.note_on(note_code, self.calc_velocity_right(event.x), event.num)
+        if self.repeat.get():
+            self.after_id = self.master.after(self.repeat_delay.get(), lambda e=event, i=note: self.play_note(e, note=i))
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -133,6 +141,12 @@ class tetratonicsquares:
 
     def set_custom_scale(self):
         self.notes = [100, 100 + self.second.get(), 100 + self.third.get(), 100 + self.fourth.get()]
+
+    def repeat_popup(self):
+        popup = Toplevel(self.master, background='#82afdd', width=100, height=100, padx=10, pady=15)
+        popup.title('Repeat Delay')
+        Spinbox(popup, from_=1, to=10000, width=8, textvariable=self.repeat_delay).grid(row=0, column=0)
+        Label(popup, text='Delay in milliseconds between repeats', pady=10, background='#82afdd').grid(row=1, column=0)
 
     def custom_scale(self):
         popup = Toplevel(self.master, background='#83DE84', width=100, height=100, padx=10, pady=15)
@@ -152,8 +166,11 @@ class tetratonicsquares:
         self.default_click = button
 
     def reset(self):
+        self.master.after_cancel(self.after_id) # Isn't working for multiple afters?
         self.player.close()
         self.notes = [100, 102, 107, 109]
+        self.repeat.set(False)
+        self.repeat_delay.set(1000)
         self.player = midi.Output(0)
         self.player.set_instrument(10, 1)
         self.player.set_instrument(11, 2)
