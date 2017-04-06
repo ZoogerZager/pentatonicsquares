@@ -18,7 +18,7 @@ pip install pygame
 * Click.
 * Click some more.
 
-![Alt text](tetratonicsquaresgif?raw=true "Demo")
+![Demo](https://github.com/joemarchese/tetratonicsquares/blob/master/tetratonicsquaresgif.gif?raw=true "Demo")
 
 ## Built With
 
