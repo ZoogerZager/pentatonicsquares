@@ -18,6 +18,8 @@ pip install pygame
 * Click.
 * Click some more.
 
+![Alt text](tetratonicsquaresgif?raw=true "Demo")
+
 ## Built With
 
 * [Python](https://www.python.org/)

@@ -1,4 +1,5 @@
 import midi_instruments
+import webbrowser
 from pygame import midi
 from tkinter import *
 from tkinter import ttk
@@ -69,7 +70,7 @@ class tetratonicsquares:
         # About
         self.about = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(menu=self.about, label='About')
-        self.help.add_command(label='LOL, no', command=lambda: None)
+        self.about.add_command(label='README', command=self.open_readme)
 
         # GUI
         self.frame_main = ttk.Frame(self.master)
@@ -139,6 +140,9 @@ class tetratonicsquares:
         self.player.set_instrument(10, 1)
         self.player.set_instrument(11, 2)
         self.player.set_instrument(12, 3)
+
+    def open_readme(self):
+        webbrowser.open('https://github.com/joemarchese/tetratonicsquares/blob/master/README.md')
 
     def _safe_close(self):
         self.player.close()
