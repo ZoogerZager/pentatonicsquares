@@ -82,15 +82,6 @@ class tetratonicsquares:
         self.second, self.third, self.fourth = (IntVar(), IntVar(), IntVar())
         self.scales.add_command(label='Define Custom Scale', command=self.custom_scale)
 
-        # Effects
-        self.effects = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(menu=self.effects, label='Effects')
-        self.repeat, self.repeat_delay = (BooleanVar(), IntVar())
-        self.repeat_delay.set(1000) # Default to 1000 milliseconds
-        self.effects.add_checkbutton(label='Repeat', variable=self.repeat)
-        self.effects.add_separator()
-        self.effects.add_command(label='Repeat Options', command=self.repeat_popup)
-
         # Help
         self.help = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(menu=self.help, label='Help')
@@ -124,8 +115,6 @@ class tetratonicsquares:
             self.player.note_on(note_code, self.calc_velocity(event.x), event.num)
         if note in [1, 3]:
             self.player.note_on(note_code, self.calc_velocity_right(event.x), event.num)
-        if self.repeat.get():
-            self.after_id = self.master.after(self.repeat_delay.get(), lambda e=event, i=note: self.play_note(e, note=i))
 
     def calc_velocity(self, x_pos):
         return round(127 * (x_pos / 400))
@@ -141,12 +130,6 @@ class tetratonicsquares:
 
     def set_custom_scale(self):
         self.notes = [100, 100 + self.second.get(), 100 + self.third.get(), 100 + self.fourth.get()]
-
-    def repeat_popup(self):
-        popup = Toplevel(self.master, background='#82afdd', width=100, height=100, padx=10, pady=15)
-        popup.title('Repeat Delay')
-        Spinbox(popup, from_=1, to=10000, width=8, textvariable=self.repeat_delay).grid(row=0, column=0)
-        Label(popup, text='Delay in milliseconds between repeats', pady=10, background='#82afdd').grid(row=1, column=0)
 
     def custom_scale(self):
         popup = Toplevel(self.master, background='#83DE84', width=100, height=100, padx=10, pady=15)
@@ -168,7 +151,7 @@ class tetratonicsquares:
     def reset(self):
         self.master.after_cancel(self.after_id) # Isn't working for multiple afters?
         self.player.close()
-        self.notes = [100, 102, 107, 109]
+        self.notes = scale_dict['Default']
         self.repeat.set(False)
         self.repeat_delay.set(1000)
         self.player = midi.Output(0)
